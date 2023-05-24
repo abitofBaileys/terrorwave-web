@@ -1,9 +1,23 @@
 {
-    "name": "laravel/laravel",
+    "name": "rowanism/terrorwave-web",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Web GUI for the Lufia 2 Terrorwave Randomizer",
+    "keywords": [
+        "lufia2",
+        "terrorwave",
+        "randomizer",
+        "laravel",
+        "htmx",
+        "hyperscript"
+    ],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "abitofBaileys",
+            "email": "abitof@baileys.games",
+            "role": "Developer"
+        }
+    ],
     "repositories": [
         {
             "type": "package",
@@ -25,8 +39,6 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "mauricius/laravel-htmx": "^0.3.0",
-        "pusher/pusher-php-server": "^7.2",
-        "raeen/phpy": "^5.0",
         "spatie/laravel-directory-cleanup": "^1.9",
         "symfony/process": "^6.2"
     },
@@ -64,6 +76,9 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "test": [
+            "vendor/bin/phpunit"
         ]
     },
     "extra": {
@@ -80,6 +95,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

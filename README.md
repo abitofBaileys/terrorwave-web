@@ -1,66 +1,80 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Lufia 2 Terrorwave Randomizer Web GUI
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### Requirements
+- [LAMP stack](https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-22-04)\
+or [DDEV](https://ddev.readthedocs.io/en/latest/users/install/docker-installation/) (for local development)
+- [Composer](https://www.digitalocean.com/community/tutorials/how-to-install-composer-on-ubuntu-20-04-quickstart)
+- [Python-is-Python3](https://linuxhint.com/install-python-ubuntu-22-04/#:~:text=an%20Arduino%20Core-,How%20to%20Install%20python%2Dis%2Dpython3%3F,-The%20%E2%80%9Cpython)
 
-## About Laravel
+This project does not utilize a database so the migration for Laravel can be skipped.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Installation
+Clone this repository\
+Open a CLI and navigate to the root of the project folder\
+Create a .env file and generate a new App Key:\
+Run `cp .env.example .env && php artisan key:generate`\
+Change the permissions for the `/public` folder:\
+Run `sudo chown www-data:www-data ./public -R`\
+Create a symlink from the `/public` folder to `/storage/app/public`:\
+`sudo ln -sfn ../storage/app/public ./public/storage`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### When using DDEV:
+Run `ddev start`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### Install dependencies with Composer:
+Run `composer update`\
+or in DDEV run `ddev exec composer update`
 
-## Learning Laravel
+#### Increase Upload Limits in php.ini (skip this when using DDEV)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Open the php.ini in [Vim](https://www.freecodecamp.org/news/vim-beginners-guide/), [Nano](https://www.howtogeek.com/42980/the-beginners-guide-to-nano-the-linux-command-line-text-editor/) or an editor of your choice:\
+`sudo vim /etc/php/8.1/apache2/php.ini`\
+`sudo nano /etc/php/8.1/apache2/php.ini`\
+Change / increase these values:
+```apache
+post_max_size = 5M
+upload_max_filesize = 5M
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+#### Set up Virtual Host (skip this when using DDEV)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Create a new virtual host\
+`sudo vim /etc/apache2/sites-available/terrorwave-web.conf`\
+with content 
+```apache
+<VirtualHost *:80>
+    DocumentRoot "/path/to/terrorwave/public"
+    ServerName yourdomain.com
+    <Directory "/path/to/terrorwave/public">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+Enable site `sudo a2ensite terrorwave-web.conf`\
+Restart apache `sudo service apache2 reload`
 
-## Laravel Sponsors
+#### Set up SSL certificate (optional, skip this when using DDEV)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Install [Certbot](https://www.digitalocean.com/community/tutorials/how-to-use-certbot-standalone-mode-to-retrieve-let-s-encrypt-ssl-certificates-on-ubuntu-22-04) if not done yet\
+Run `certbot certonly --webroot -d yourdomain.com -w /path/to/terrorwave/public/`
 
-### Premium Partners
+#### Opening in your browser
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Go to http<area>://yourdomain.com or https<area>://yourdomain.com (if SSL enabled)\
+or in ddev https://terrorwave-web.ddev.site
 
-## Contributing
+## Credits
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+abyssonym's terrorwave Randomizer\
+https://github.com/abyssonym/terrorwave
 
-## Code of Conduct
+Meats\
+https://github.com/tethtoril
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Ancient Cave Discord\
+https://discord.gg/96Uswexh9q
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
