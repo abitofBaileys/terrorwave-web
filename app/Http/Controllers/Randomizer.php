@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\File;
-use Illuminate\View\View;
 use Mauricius\LaravelHtmx\Http\HtmxRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Process;
 
-class Randomizer extends Controller
+class Randomizer extends BaseController
 {
     // These are the valid file md5 checksums to accept
     public array $MD5_hashes = [
@@ -68,10 +68,13 @@ class Randomizer extends Controller
             // "The randomizer will output a new, randomized rom with the seed in the filename."
             // e.g. L2.sfc -> L2.stw.123456789.sfc
             $outputFilePath = "storage/roms/" . $filename . '.' . $flags . '.' . $seed . '.' . $extension;
+            $outputSpoilerFilePath = "storage/roms/spoiler." . $filename . '.' . $flags . '.' . $seed . '.' . $extension . ".txt";
             // Return a download button to this Rom file
             return view()->renderFragment('output', 'download', [
                 'file_path' => $outputFilePath,
                 'file_name' => $filename . '.' . $flags . '.' . $seed . '.' . $extension,
+                'spoiler_file_path' => $outputSpoilerFilePath,
+                'spoiler_file_name' => "spoiler." . $filename . '.' . $flags . '.' . $seed . '.' . $extension . ".txt",
             ]);
         } else {
             dd("JavaScript is not activated or you didn't POST via htmx.");
