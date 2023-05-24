@@ -13,9 +13,15 @@ Clone this repository\
 Open a CLI and navigate to the root of the project folder\
 Create a .env file and generate a new App Key:\
 Run `cp .env.example .env && php artisan key:generate`\
-Change the permissions for the `/public` folder:\
-Run `sudo chown www-data:www-data ./public -R`\
-Create a symlink from the `/public` folder to `/storage/app/public`:\
+Adjust the `APP_URL` in `.env` **to your domain** or in case of DDEV:
+```dotenv
+APP_URL="https://terrorwave-web.ddev.site"
+```
+Change the permissions for the project:\
+Run `sudo chown www-data:www-data . -R`\
+Create a symlink from the `/public` folder to `/storage/app/public` using artisan:\
+`php artisan storage:link`\
+Alternatively
 `sudo ln -sfn ../storage/app/public ./public/storage`
 
 #### When using DDEV:

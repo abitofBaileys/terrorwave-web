@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\File;
 use Mauricius\LaravelHtmx\Http\HtmxRequest;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Process;
 
 class Randomizer extends BaseController
@@ -30,7 +31,7 @@ class Randomizer extends BaseController
             $CSUM_valid = in_array($fileCSUM, array_column($this->MD5_hashes, 'hash'));
             // If invalid checksum, return error message
             if (!$CSUM_valid) {
-                return view()->renderFragment('output', 'error');
+                return view('fragments.error');
             }
 
             // Get original filename
@@ -56,26 +57,32 @@ class Randomizer extends BaseController
             // Get difficulty factor from form, if none specified use 1.0
             $difficulty = ($request->get('difficulty') ?? "1.0");
             // Chain arguments to a single string
-            $arguments = " ".$flags.$codes." ".$seed." ".$randomness." ".$difficulty;
+            $arguments = " {$flags}{$codes} {$seed} {$randomness} {$difficulty}";
 
             // Build the command to execute
-            $command = "python " . base_path().'/vendor/abyssonym/terrorwave/randomizer.py ';
-            $command .= "'".storage_path('app') . "/" . $path."'".$arguments;
+            $command = "python " . base_path() . '/vendor/abyssonym/terrorwave/randomizer.py ';
+            $command .= "'" . storage_path('app') . "/{$path}'{$arguments}";
 
             // Start the process
-            Process::path(storage_path('app'))->run($command);
-            // Build the file path to the randomized Rom file based on randomizer naming scheme
-            // "The randomizer will output a new, randomized rom with the seed in the filename."
-            // e.g. L2.sfc -> L2.stw.123456789.sfc
-            $outputFilePath = "storage/roms/" . $filename . '.' . $flags . '.' . $seed . '.' . $extension;
-            $outputSpoilerFilePath = "storage/roms/spoiler." . $filename . '.' . $flags . '.' . $seed . '.' . $extension . ".txt";
-            // Return a download button to this Rom file
-            return view()->renderFragment('output', 'download', [
-                'file_path' => $outputFilePath,
-                'file_name' => $filename . '.' . $flags . '.' . $seed . '.' . $extension,
-                'spoiler_file_path' => $outputSpoilerFilePath,
-                'spoiler_file_name' => "spoiler." . $filename . '.' . $flags . '.' . $seed . '.' . $extension . ".txt",
-            ]);
+            $process = Process::path(storage_path('app'))->run($command);
+
+            if ($process->successful()) {
+                // Build the file path to the randomized Rom file based on randomizer naming scheme
+                // "The randomizer will output a new, randomized rom with the seed in the filename."
+                // e.g. L2.sfc -> L2.stw.123456789.sfc
+                $outputFilePath = "storage/roms/{$filename}.{$flags}.{$seed}.{$extension}";
+                $outputSpoilerFilePath = "storage/roms/spoiler.{$filename}.{$flags}.{$seed}.{$extension}.txt";
+                // Return a download button to this Rom file
+
+                return view('fragments.download', [
+                    'file_path' => $outputFilePath,
+                    'file_name' => "{$filename}.{$flags}.{$seed}.{$extension}",
+                    'spoiler_file_path' => $outputSpoilerFilePath,
+                    'spoiler_file_name' => "spoiler.{$filename}.{$flags}.{$seed}.{$extension}.txt",
+                ]);
+            } else {
+                return view('fragments.errorprocess',['data' => $process->errorOutput()]);
+            }
         } else {
             dd("JavaScript is not activated or you didn't POST via htmx.");
         }
