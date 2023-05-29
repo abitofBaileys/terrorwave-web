@@ -1,5 +1,5 @@
 behavior validateForm
-    on click or input
+    on click or change or input
         set validated to my.checkValidity()
         if validated tell the first <button[type='submit']/> in me remove [@disabled] end
         else tell the first <button[type='submit']/> in me add [@disabled] end
