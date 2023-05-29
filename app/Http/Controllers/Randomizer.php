@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\File;
 use Mauricius\LaravelHtmx\Http\HtmxRequest;
@@ -11,60 +12,99 @@ use Illuminate\Support\Facades\Process;
 
 class Randomizer extends BaseController
 {
-    // These are the valid file md5 checksums to accept
-    public array $MD5_hashes = [
-        ['hash' => '6efc477d6203ed2b3b9133c1cd9e9c5d', 'version' => 'NA'],
-        ['hash' => '026b649ed316448e038349e39a6fe579', 'version' => 'Fixxxer'],
-        ['hash' => 'b58c76f2ac0b2aeb9b779e880d2bff18', 'version' => 'Frue']
+    private ?HtmxRequest $request = null;
+    public array $allowed = [
+        // These are the valid file md5 checksums to accept
+        'file' => [
+            ['key' => '6efc477d6203ed2b3b9133c1cd9e9c5d', 'value' => 'NA'],
+            ['key' => '026b649ed316448e038349e39a6fe579', 'value' => 'Fixxxer'],
+            ['key' => 'b58c76f2ac0b2aeb9b779e880d2bff18', 'value' => 'Frue']
+        ],
+        // These are the valid flags
+        'flag' => [
+            ['key' => 'c', 'value' => 'Randomize characters'],
+            ['key' => 'i', 'value' => 'Randomize items and equipment'],
+            ['key' => 'l', 'value' => 'Randomize learnable spells'],
+            ['key' => 'm', 'value' => 'Randomize monsters'],
+            ['key' => 'o', 'value' => 'Randomize monster movements'],
+            ['key' => 'p', 'value' => 'Randomize capsule monsters'],
+            ['key' => 's', 'value' => 'Randomize shops'],
+            ['key' => 't', 'value' => 'Randomize treasure chests'],
+            ['key' => 'w', 'value' => 'Create an open-world seed'],
+            'default' => 'v',
+        ],
+        // These are the valid codes
+        'code' => [
+            ['key' => 'airship',             'value' => 'Start the game with the airship'],
+            ['key' => 'bossy',               'value' => 'Very random bosses (unbalanced even with scaling)'],
+            ['key' => 'fourkeys',            'value' => 'Open World, but there are only four keys'],
+            ['key' => 'scale',               'value' => 'Scale enemy status in open-world mode'],
+            ['key' => 'noscale',             'value' => 'Do not scale enemies in open-world mode'],
+            ['key' => 'splitscale',          'value' => 'Input custom values for scaling bosses and nonbosses'],
+            ['key' => 'easymodo',            'value' => 'Every enemy dies in one hit'],
+            ['key' => 'holiday',             'value' => 'Enemies run from the player'],
+            ['key' => 'monstermash',         'value' => 'Randomize which monsters appear in dungeons'],
+            ['key' => 'nothingpersonnelkid', 'value' => 'Extremely aggressive enemies'],
+            ['key' => 'anywhere',            'value' => 'Equipment slots are randomized (breaks "Strongest")'],
+            ['key' => 'nocap',               'value' => 'Disable multiple capsule monsters being usable in battle'],
+        ],
     ];
+
     /**
      * @param HtmxRequest $request The request issued by the htmx form
+     * @throws Exception
      */
     public function makeRom(HtmxRequest $request)
     {
         if ($request->isHtmxRequest()) {
+            // Save the request to use elsewhere in this class
+            $this->request = $request;
 
-            // Fetch the uploaded file
-            $uploadedFile = $request->file('file');
-            // Compare checksums
-            $fileCSUM = md5_file($uploadedFile);
-            $CSUM_valid = in_array($fileCSUM, array_column($this->MD5_hashes, 'hash'));
             // If invalid checksum, return error message
-            if (!$CSUM_valid) {
+            if (!$this->validateChecksum()) {
                 return view('fragments.error');
             }
 
             // Get original filename
-            $_originalFile = $uploadedFile->getClientOriginalName();
+            $_originalFile = $this->request->file('file')->getClientOriginalName();
             // Store filename and extension separately
             $filename = pathinfo($_originalFile, PATHINFO_FILENAME);
             $extension = pathinfo($_originalFile, PATHINFO_EXTENSION);
             // Store the file in public storage under original filename
             $path = Storage::putFileAs(
-                'public/roms',
-                $request->file('file'),
+                'roms',
+                $this->request->file('file'),
                 $_originalFile
             );
 
-            // Get flags from form, if none specified, use v flag (Dummy flag: Randomize nothing)
-            $flags = implode($request->get('flag') ?? ["v"]);
-            // Get secret codes from form, if none specified, use no codes
-            $codes = implode($request->get('code') ?? [""]);
-            // Get seed from form, if none specified, use timestamp
-            $seed = ($request->get('seed') ?? time());
+            // Filter out all flags that are not allowed
+            $flags = $this->getSanitizedArgumentsFromRequest('flag');
+
+            // Filter out all codes that are not allowed
+            $codes = $this->getSanitizedArgumentsFromRequest('code');
+
+            // Get seed from form, if none or invalid, create new
+            $seed = $this->request->get('seed') ?? $this->newSeed();
+            $seed = substr($seed,0,10);
+            $seed = ltrim($seed,"0");
+            $seed = ($this->isOnlyDigits($seed)) ? $seed : $this->newSeed();
+
             // Get randomness factor from form, if none specified use 0.5
-            $randomness = ($request->get('randomness') ?? "0.5");
+            $randomness = ($this->request->get('randomness') ?? "0.5");
+
             // Get difficulty factor from form, if none specified use 1.0
-            $difficulty = ($request->get('difficulty') ?? "1.0");
+            $difficulty = ($this->request->get('difficulty') ?? "1.0");
+
             // Chain arguments to a single string
-            $arguments = " {$flags}{$codes} {$seed} {$randomness} {$difficulty}";
+            $argumentString = " {$flags}{$codes} {$seed} {$randomness} {$difficulty}";
 
             // Build the command to execute
             $command = "python " . base_path() . '/vendor/abyssonym/terrorwave/randomizer.py ';
-            $command .= "'" . storage_path('app') . "/{$path}'{$arguments}";
+            $command .= "'" . base_path('/public/storage/') . "{$path}'{$argumentString}";
 
             // Start the process
-            $process = Process::path(storage_path('app'))->run($command);
+            //dd(storage_path('app'));
+            $process = Process::run($command);
 
             if ($process->successful()) {
                 // Build the file path to the randomized Rom file based on randomizer naming scheme
@@ -88,20 +128,79 @@ class Randomizer extends BaseController
         }
     }
 
+
+    /**
+     * Sanitizes arguments passed from the form and returns a string containing the arguments
+     * @param string $type The input name, referring the keys in $this->allowed
+     * @return String
+     */
+    private function getSanitizedArgumentsFromRequest(string $type) : String
+    {
+        $arguments = array();
+        // Filter out all arguments that are not allowed
+        foreach ($this->request->get($type) ?? [] as $lookupKey) {
+            if ($this->lookupAllowed($lookupKey, $type)) {
+                $arguments[] = $lookupKey;
+            }
+        }
+        // If no arguments are given, use default value if exists, otherwise empty string
+        if (sizeof($arguments) === 0) $arguments[] = ($this->allowed[$type]['default'] ?? '');
+        return implode($arguments);
+    }
+
+    private function validateChecksum() : bool
+    {
+        $fileCSUM = md5_file($this->request->file('file'));
+        return $this->lookupAllowed($fileCSUM, 'file');
+    }
+
+    /**
+     * Returns whether $needle exists in $this->allowed[$type]['key']
+     * @param string $needle The string to check
+     * @param string $type
+     * @return bool
+     */
+    private function lookupAllowed(string $needle, string $type) : bool
+    {
+        return in_array($needle, array_column($this->allowed[$type], "key"));
+    }
+
+    /**
+     * Checks whether a string only contains digits
+     * Also trims 0s in front
+     * @param string $string The input string
+     * @return bool
+     */
+    private static function isOnlyDigits(string $string): bool
+    {
+        return ctype_digit($string);
+    }
+
+    /**
+     * Returns a new seed
+     * @throws Exception
+     */
+    private static function newSeed(): string
+    {
+        return (string) random_int(1, 9999999999);
+    }
+
     /**
      * @param HtmxRequest $request The request issued by the htmx form
      */
-    public function deleteRoms(HtmxRequest $request)
+    private function deleteRoms(HtmxRequest $request)
     {
-        if ($request->isHtmxRequest()) {
+        dd("Not implemented yet.");
+        if ($this->request->isHtmxRequest()) {
             $foo = File::delete([
-                    $request->get('file_path'),
-                    $request->get('file_path_orig'),
-                    $request->get('file_path_spoiler'),
-                ]);
+                $this->request->get('file_path'),
+                $this->request->get('file_path_orig'),
+                $this->request->get('file_path_spoiler'),
+            ]);
             dd($foo);
         } else {
             dd("JavaScript is not activated or you didn't POST via htmx.");
         }
     }
+
 }
