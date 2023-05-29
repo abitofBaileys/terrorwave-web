@@ -25,8 +25,8 @@
 </div>
 <div class="container mb-5">
     <div class="row d-flex flex-column justify-content-center align-items-center">
-        <div class="col-12 col-lg-8">
-            <h2>Lufia 2 Terror Wave Randomizer</h2>
+        <div class="col-12 col-lg-8 mt-3">
+            <h2>Lufia 2 Terrorwave Randomizer GUI</h2>
             <form id='form' hx-encoding='multipart/form-data' hx-post='/terrorwave' hx-target="#output" hx-indicator="#spinner"
                   _="install validateForm">
                 @csrf
@@ -246,7 +246,7 @@
                         <small>This option controls how extreme the randomizations are. At 0.0, almost nothing will be randomized. At 1.0, enemies in the starting area will most likely have boss stats. Any open world setting squares the randomness (x^2).</small>
                     </div>
                 </div>
-                <div class="row mt-3 mb-5">
+                <div class="row mt-3">
                     <div class="col-12 position-relative">
                         <label for="mod-difficulty" class="form-label position-absolute">Difficulty</label>
                         <output id="output-difficulty" class="d-block text-center">1.0</output>
@@ -254,6 +254,28 @@
                                _="on input or change trigger update end
                             on update put my value into #output-difficulty"><br>
                         <small>This option controls how extreme the difficulty modifier is. Any setting beyond 1.0 becomes unbalanced relatively quickly.</small>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 d-flex justify-content-center">
+                        <a href="https://github.com/abyssonym/terrorwave" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-success text-light">abyssonym's terrorwave Randomizer</span>
+                        </a>
+                        &nbsp;
+                        <a href="https://github.com/tethtoril" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-success text-light">Meats</span>
+                        </a>
+                        &nbsp;
+                        <a href="https://discord.gg/96Uswexh9q" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-success text-light">Ancient Cave Discord</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-3 mb-5">
+                    <div class="col-12 d-flex justify-content-center">
+                        <a href="https://github.com/abitofBaileys/terrorwave-web" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-light text-dark">GitHub repo</span>
+                        </a>
                     </div>
                 </div>
                 <div class="position-fixed position-lg-relative bottom-0 py-3 start-0 end-0 container d-flex flex-column justify-content-center align-items-center">
