@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Terrorwave-Web</title>
+    <title>Lufia 2 Terrorwave Randomizer Web GUI</title>
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
 </head>
 <body class="bg-dark"
-      _="on every htmx:beforeSend in <form/>
+      _="init if no localStorage.hideIntro remove .d-none from <.intro/> end
+      on every htmx:beforeSend in <form/>
          tell it
              toggle [@@disabled] on the first <button[type='submit']/> in me until htmx:afterOnLoad">
 <div id="modal" class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -26,22 +27,25 @@
 <div class="container mb-5">
     <div class="row d-flex flex-column justify-content-center align-items-center">
         <div class="col-12 col-lg-8 mt-3">
-            <h2>Lufia 2 Terrorwave Randomizer GUI</h2>
+            <h2 class="text-center">Lufia 2 Terrorwave Randomizer Web GUI</h2>
+            <div class="alert alert-primary alert-dismissible intro d-none overflow-hidden" role="alert">
+                For more complex randomization like custom randomness for each flag or individual scaling for bosses and monsters, <a href="https://github.com/abyssonym/terrorwave" target="_blank">please use abyssonym's randomizer yourself</a>. ( Star it while you're at it! )<br>
+                <span class="text-reset fw-semibold">This page is not meant to replace or take the credit for abyssonym's amazing work! ❤️</span>
+                <button type="button" class="btn-close" aria-label="Close"
+                _="on click set localStorage.hideIntro to 'true' then transition .intro's height to 0 opacity to 0 padding to '0 var(--bs-alert-padding-x)' margin to 0 then add .d-none to .intro"></button>
+            </div>
             <form id='form' hx-encoding='multipart/form-data' hx-post='/terrorwave' hx-target="#output" hx-indicator="#spinner"
                   _="install validateForm">
                 @csrf
+                <h5 class="mt-3">Rom File:</h5>
                 <div class="input-group mb-3">
                     <input type="file" name='file' class="form-control" id="romfile" aria-label="ROM File" required="required">
                 </div>
                 <h5 class="mt-3">Seed:</h5>
                 <div class="input-group mb-3">
-                    <input type="text" name='seed' id="seed" pattern="[0-9]*" maxlength="10" class="form-control" placeholder="Input a seed value here, or leave it blank if you don't care."
-                           _="on input or change set val to my value then set max to my maxLength
-                            if val is greater than max
-                                js(me,val,max) me.value = val.slice(0, max)
-                            end">
+                    <input type="text" name='seed' id="seed" pattern="[0-9]{10}" maxlength="10" class="form-control" placeholder="Input a seed value here, or leave it blank if you don't care.">
                     <button class="btn btn-light" type="button" id="button-seed"
-                            _="on click js return Math.ceil(Math.random() * (9999999999 - 1111111111) + 1111111111) end set #seed's value to it"
+                            _="on click set #seed's value to Math.floor((Math.random() * ((9999999999 - 1000000000) + 1)) + 1000000000)"
                     >Random</button>
                 </div>
                 <h5>Presets:</h5>
@@ -83,6 +87,7 @@
                     </button>
                     <button type="button" class="btn btn-info col"
                             _="on click set the checked of .form-check-input to false
+                                then set the checked of <#flag-w/> to true
                                 then set the value of <#mod-randomness/> to '0.5' then trigger update on <#mod-randomness/>
                                 then set the value of <#mod-difficulty/> to '1.0' then trigger update on <#mod-difficulty/>">
                         Reset
@@ -90,6 +95,12 @@
                 </div>
                 <h5 class="mt-3">Flags:</h5>
                 <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flag-w" name="flag[]" value="w" checked="checked">
+                            <label class="form-check-label" for="flag-w">Create an open-world seed</label>
+                        </div>
+                    </div>
                     <div class="col-12 col-lg-6">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="flag-c" name="flag[]" value="c">
@@ -136,12 +147,6 @@
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="flag-t" name="flag[]" value="t">
                             <label class="form-check-label" for="flag-t">Randomize treasure chests</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-6">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flag-w" name="flag[]" value="w">
-                            <label class="form-check-label" for="flag-w">Create an open-world seed</label>
                         </div>
                     </div>
                 </div>
@@ -256,10 +261,15 @@
                         <small>This option controls how extreme the difficulty modifier is. Any setting beyond 1.0 becomes unbalanced relatively quickly.</small>
                     </div>
                 </div>
+                <h5 class="mt-3">Links:</h5>
                 <div class="row mt-3">
-                    <div class="col-12 d-flex justify-content-center">
+                    <div class="col-12 d-flex flex-wrap justify-content-center">
                         <a href="https://github.com/abyssonym/terrorwave" target="_blank" style="text-decoration: none;">
-                            <span class="badge bg-success text-light">abyssonym's terrorwave Randomizer</span>
+                            <span class="badge bg-success text-light">abyssonym's Lufia 2 Terrorwave Randomizer</span>
+                        </a>
+                        &nbsp;
+                        <a href="https://github.com/HolySmith24/Lufia_2Tracker/" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-success text-light">HolySmith24's Lufia 2 EmoTracker Pack</span>
                         </a>
                         &nbsp;
                         <a href="https://github.com/tethtoril" target="_blank" style="text-decoration: none;">
@@ -274,7 +284,7 @@
                 <div class="row mt-3 mb-5">
                     <div class="col-12 d-flex justify-content-center">
                         <a href="https://github.com/abitofBaileys/terrorwave-web" target="_blank" style="text-decoration: none;">
-                            <span class="badge bg-light text-dark">GitHub repo</span>
+                            <span class="badge bg-light text-dark">GitHub</span>
                         </a>
                     </div>
                 </div>
