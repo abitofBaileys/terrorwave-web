@@ -41,7 +41,7 @@ class Randomizer extends BaseController
             $extension = pathinfo($_originalFile, PATHINFO_EXTENSION);
             // Store the file in public storage under original filename
             $path = Storage::putFileAs(
-                'roms',
+                'storage/app/public/roms',
                 $this->request->file('file'),
                 $_originalFile
             );
@@ -81,8 +81,8 @@ class Randomizer extends BaseController
                 // Build the file path to the randomized Rom file based on randomizer naming scheme
                 // "The randomizer will output a new, randomized rom with the seed in the filename."
                 // e.g. L2.sfc -> L2.stw.123456789.sfc
-                $outputFilePath = "storage/roms/{$filename}.{$flags}.{$seed}.{$extension}";
-                $outputSpoilerFilePath = "storage/roms/spoiler.{$filename}.{$flags}.{$seed}.{$extension}.txt";
+                $outputFilePath = "/storage/roms/{$filename}.{$flags}.{$seed}.{$extension}";
+                $outputSpoilerFilePath = "/storage/roms/spoiler.{$filename}.{$flags}.{$seed}.{$extension}.txt";
                 // Return a download button to this Rom file
 
                 return view('fragments.modal.download', [
@@ -116,6 +116,7 @@ class Randomizer extends BaseController
         }
         // If no arguments are given, use default value if exists, otherwise empty string
         if (sizeof($arguments) === 0) $arguments[] = (config('randomizer.allowed')[$type]['default'] ?? '');
+        if ($type == "flag") sort($arguments);
         return implode($arguments);
     }
 
