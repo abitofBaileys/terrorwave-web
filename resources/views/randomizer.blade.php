@@ -66,10 +66,22 @@
                         </a>
                     </div>
                 </div>
-                <div class="row mt-3 mb-5">
+                <div class="row mt-3">
                     <div class="col-12 d-flex justify-content-center">
                         <a href="https://github.com/abitofBaileys/terrorwave-web" target="_blank" style="text-decoration: none;">
                             <span class="badge bg-light text-dark">GitHub</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-3 mb-5 justify-content-center">
+                    Powered by
+                    <div class="col-12 d-flex justify-content-center">
+                        <a href="https://htmx.org/" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-light text-dark">&lt;/&gt; htmx</span>
+                        </a>
+                        &nbsp;
+                        <a href="https://hyperscript.org/" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-light text-dark">///_hyperscript</span>
                         </a>
                     </div>
                 </div>
