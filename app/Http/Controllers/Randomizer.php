@@ -14,6 +14,10 @@ class Randomizer extends BaseController
 {
     private ?HtmxRequest $request = null;
 
+    public function buildForm() {
+        return view('randomizer',['data' => config('randomizer')]);
+    }
+
     /**
      * @param HtmxRequest $request The request issued by the htmx form
      * @throws Exception
@@ -36,8 +40,8 @@ class Randomizer extends BaseController
             $filename = pathinfo($_originalFile, PATHINFO_FILENAME);
             $extension = pathinfo($_originalFile, PATHINFO_EXTENSION);
             // Store the file in public storage under original filename
-            $path = Storage::putFileAs(
-                'storage/app/public/roms',
+            $path = Storage::disk('public')->putFileAs(
+                'roms',
                 $this->request->file('file'),
                 $_originalFile
             );
@@ -55,17 +59,17 @@ class Randomizer extends BaseController
             $seed = ($this->isOnlyDigits($seed)) ? $seed : $this->newSeed();
 
             // Get randomness factor from form, if none specified use 0.5
-            $randomness = ($this->request->get('randomness') ?? env('RANDOMIZER_DEFAULT_RANDOMNESS', '0.5'));
+            $randomness = ($this->request->get('randomness') ?? "0.5");
 
             // Get difficulty factor from form, if none specified use 1.0
-            $difficulty = ($this->request->get('difficulty') ?? env('RANDOMIZER_DEFAULT_DIFFICULTY', '1.0'));
+            $difficulty = ($this->request->get('difficulty') ?? "1.0");
 
             // Chain arguments to a single string
             $argumentString = " {$flags}{$codes} {$seed} {$randomness} {$difficulty}";
 
             // Build the command to execute
             $command = "python " . base_path() . '/vendor/abyssonym/terrorwave/randomizer.py ';
-            $command .= "'" . base_path() . "/{$path}'{$argumentString}";
+            $command .= "'" . base_path() . "/storage/app/public/{$path}'{$argumentString}";
 
             // Start the process
             //dd($command);
@@ -98,7 +102,7 @@ class Randomizer extends BaseController
 
     /**
      * Sanitizes arguments passed from the form and returns a string containing the arguments
-     * @param string $type The input name, referring the keys in config('randomizer')
+     * @param string $type The input name, referring the keys in config('randomizer.allowed')
      * @return String
      */
     private function getSanitizedArgumentsFromRequest(string $type) : String
@@ -123,7 +127,7 @@ class Randomizer extends BaseController
     }
 
     /**
-     * Returns whether $needle exists in config('randomizer')[$type]['key']
+     * Returns whether $needle exists in config('randomizer.allowed')[$type]['key']
      * @param string $needle The string to check
      * @param string $type
      * @return bool
@@ -150,6 +154,24 @@ class Randomizer extends BaseController
     private static function newSeed(): string
     {
         return (string) random_int(1, 9999999999);
+    }
+
+    /**
+     * @param HtmxRequest $request The request issued by the htmx form
+     */
+    private function deleteRoms(HtmxRequest $request)
+    {
+        dd("Not implemented yet.");
+        if ($this->request->isHtmxRequest()) {
+            $foo = File::delete([
+                $this->request->get('file_path'),
+                $this->request->get('file_path_orig'),
+                $this->request->get('file_path_spoiler'),
+            ]);
+            dd($foo);
+        } else {
+            dd("JavaScript is not activated or you didn't POST via htmx.");
+        }
     }
 
 }
