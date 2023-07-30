@@ -68,7 +68,7 @@ class Randomizer extends BaseController
             $argumentString = " {$flags}{$codes} {$seed} {$randomness} {$difficulty}";
 
             // Build the command to execute
-            $command = "python " . base_path() . '/vendor/abyssonym/terrorwave/randomizer.py ';
+            $command = "python " . base_path() . '/vendor/phku-hk/terrorwave-blitz/randomizer.py ';
             $command .= "'" . base_path() . "/storage/app/public/{$path}'{$argumentString}";
 
             // Start the process
