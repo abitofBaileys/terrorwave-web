@@ -171,7 +171,7 @@ return [
             'category' => 0,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('airship', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('airship', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'bossy' => [
             'key' => 'bossy',
@@ -179,7 +179,7 @@ return [
             'category' => 0,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('bossy', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('bossy', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'fourkeys' => [
             'key' => 'fourkeys',
@@ -187,7 +187,7 @@ return [
             'category' => 0,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('fourkeys', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('fourkeys', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'scale' => [
             'key' => 'scale',
@@ -195,7 +195,7 @@ return [
             'category' => 1,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('scale', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('scale', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
             'behavior' => [
                 'off' => ['code-noscale']
             ],
@@ -206,7 +206,7 @@ return [
             'category' => 1,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('noscale', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('noscale', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
             'behavior' => [
                 'off' => ['code-scale']
             ],
@@ -217,7 +217,7 @@ return [
             'category' => 1,
             'allowed' => false,
             'displayed' => false,
-            'enabled' => in_array('splitscale', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('splitscale', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'easymodo' => [
             'key' => 'easymodo',
@@ -225,7 +225,7 @@ return [
             'category' => 2,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('easymodo', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('easymodo', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'holiday' => [
             'key' => 'holiday',
@@ -233,7 +233,7 @@ return [
             'category' => 2,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('holiday', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('holiday', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'monstermash' => [
             'key' => 'monstermash',
@@ -241,7 +241,7 @@ return [
             'category' => 3,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('monstermash', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('monstermash', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'nothingpersonnelkid' => [
             'key' => 'nothingpersonnelkid',
@@ -249,7 +249,7 @@ return [
             'category' => 3,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('nothingpersonnelkid', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('nothingpersonnelkid', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'anywhere' => [
             'key' => 'anywhere',
@@ -257,7 +257,7 @@ return [
             'category' => 3,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('anywhere', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('anywhere', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
         'nocap' => [
             'key' => 'nocap',
@@ -265,7 +265,15 @@ return [
             'category' => 3,
             'allowed' => true,
             'displayed' => true,
-            'enabled' => in_array('nocap', explode(',', env('RANDOMIZER_DEFAULT_CODE', 'w'))),
+            'enabled' => in_array('nocap', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
+        ],
+        'blitz' => [
+            'key' => 'blitz',
+            'value' => 'Allows a faster playthrough',
+            'category' => 0,
+            'allowed' => true,
+            'displayed' => true,
+            'enabled' => in_array('blitz', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
         ],
     ],
     /*
@@ -347,6 +355,30 @@ return [
             ],
             'behavior' => [
                 'on' => ['flag-s', 'flag-t', 'flag-w', 'code-fourkeys', 'code-scale', 'code-nocap'],
+                'set' => [
+                    'mod-randomness' => [
+                        'key' => 'mod-randomness',
+                        'value' => '0.5'
+                    ],
+                    'mod-difficulty' => [
+                        'key' => 'mod-difficulty',
+                        'value' => '1.0'
+                    ],
+                ],
+            ],
+        ],
+        'blitz' => [
+            'key' => "blitz",
+            'label' => "Blitz",
+            'displayed' => true,
+            'enabled' => true,
+            'palette' => [
+                'background-color' => 'var(--bs-dark)',
+                'border-color' => 'var(--bs-info)',
+                'color' => 'var(--bs-info)',
+            ],
+            'behavior' => [
+                'on' => ['flag-s', 'flag-t', 'flag-w', 'code-blitz', 'code-scale', 'code-nocap'],
                 'set' => [
                     'mod-randomness' => [
                         'key' => 'mod-randomness',

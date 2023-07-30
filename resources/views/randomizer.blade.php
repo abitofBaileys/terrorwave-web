@@ -6,7 +6,9 @@
             <h2 class="text-center">Lufia 2 Terrorwave Randomizer Web GUI</h2>
             <div class="alert alert-primary alert-dismissible intro d-none overflow-hidden" role="alert">
                 For more complex randomization like custom randomness for each flag or individual scaling for bosses and monsters, <a href="https://github.com/abyssonym/terrorwave" target="_blank">please use abyssonym's randomizer yourself</a>. ( Star it while you're at it! )<br>
-                <span class="text-reset fw-semibold">This page is not meant to replace or take the credit for abyssonym's amazing work! ❤️</span>
+                <span class="text-reset fw-semibold">This page is not meant to replace or take the credit for abyssonym's amazing work! ❤️</span><br>
+                <br>
+                Also check out and star <a href="https://github.com/phku-hk/terrorwave-blitz" target="_blank">PhilAndChill's new "blitz" code they made</a>!
                 <button type="button" class="btn-close" aria-label="Close"
                         _="on click set localStorage.hideIntro to 'true' then transition .intro's height to 0 opacity to 0 padding to '0 var(--bs-alert-padding-x)' margin to 0 then add .d-none to .intro"></button>
             </div>
@@ -26,7 +28,7 @@
                     >Random</button>
                 </div>
                 <h5>Presets:</h5>
-                <div class="d-flex flex-wrap gap-3">
+                <div class="d-flex flex-wrap gap-3 justify-content-around">
                     @foreach ($data['preset'] as $preset)
                         @include('fragments.randomizer.preset')
                     @endforeach
@@ -53,10 +55,15 @@
                             <span class="badge bg-success text-light">abyssonym's Lufia 2 Terrorwave Randomizer</span>
                         </a>
                         &nbsp;
+                        <a href="https://github.com/phku-hk/terrorwave-blitz" target="_blank" style="text-decoration: none;">
+                            <span class="badge bg-success text-light">PhilAndChill's additional "Blitz" Code</span>
+                        </a>
+                        &nbsp;
                         <a href="https://github.com/HolySmith24/Lufia_2Tracker/" target="_blank" style="text-decoration: none;">
                             <span class="badge bg-success text-light">HolySmith24's Lufia 2 EmoTracker Pack</span>
                         </a>
-                        &nbsp;
+                    </div>
+                    <div class="col-12 d-flex flex-wrap justify-content-center">
                         <a href="https://github.com/tethtoril" target="_blank" style="text-decoration: none;">
                             <span class="badge bg-success text-light">Meats</span>
                         </a>

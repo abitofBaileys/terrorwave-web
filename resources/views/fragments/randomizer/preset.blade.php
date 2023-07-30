@@ -2,7 +2,7 @@
 @isset($preset['behavior']['on']) @php($on = "#".implode(",#",$preset['behavior']['on'])) @endisset
 @isset($preset['behavior']['off']) @php($off = "#".implode(",#",$preset['behavior']['off'])) @endisset
 @isset($preset['behavior']['set']) @php($set = $preset['behavior']['set']) @endisset
-<button type="button" class="btn col"
+<button type="button" class="btn col-3"
         style="background-color: {{$pal['background-color']}}!important; border-color: {{$pal['border-color']}}!important; color: {{$pal['color']}}!important;"
         _="on click set the checked of .form-check-input to false
         @isset($preset['behavior']['on']) then set the checked of <{{$on}}/> to true @endisset

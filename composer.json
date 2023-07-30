@@ -29,11 +29,23 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "phku-hk/terrorwave-blitz",
+                "version": "master",
+                "dist": {
+                    "url": "https://github.com/phku-hk/terrorwave-blitz/releases/download/v1.0.0/source_full_v1.0.0.zip",
+                    "type": "zip"
+                }
+            }
         }
     ],
     "require": {
         "php": "^8.1",
         "abyssonym/terrorwave": "dev-master",
+        "phku-hk/terrorwave-blitz": "master",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
