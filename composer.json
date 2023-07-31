@@ -36,7 +36,7 @@
                 "name": "phku-hk/terrorwave-blitz",
                 "version": "master",
                 "dist": {
-                    "url": "https://github.com/phku-hk/terrorwave-blitz/releases/download/v1.0.0/source_full_v1.0.0.zip",
+                    "url": "https://github.com/phku-hk/terrorwave-blitz/releases/download/v1.0.1/source_full_v1.0.1.zip",
                     "type": "zip"
                 }
             }
