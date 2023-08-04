@@ -59,10 +59,12 @@ class Randomizer extends BaseController
             $seed = ($this->isOnlyDigits($seed)) ? $seed : $this->newSeed();
 
             // Get randomness factor from form, if none specified use 0.5
-            $randomness = ($this->request->get('randomness') ?? "0.5");
+            $randomness = ($this->request->get('randomness') ?? env('RANDOMIZER_DEFAULT_RANDOMNESS', "0.5"));
+            $randomness = ($this->isNumeric($randomness)) ? $randomness : env('RANDOMIZER_DEFAULT_RANDOMNESS', "0.5");
 
-            // Get difficulty factor from form, if none specified use 1.0
-            $difficulty = ($this->request->get('difficulty') ?? "1.0");
+                // Get difficulty factor from form, if none specified use 1.0
+            $difficulty = ($this->request->get('difficulty') ?? env('RANDOMIZER_DEFAULT_DIFFICULTY', "1.0"));
+            $difficulty = ($this->isNumeric($difficulty)) ? $difficulty : env('RANDOMIZER_DEFAULT_DIFFICULTY', "1.0");
 
             // Chain arguments to a single string
             $argumentString = " {$flags}{$codes} {$seed} {$randomness} {$difficulty}";
@@ -148,12 +150,22 @@ class Randomizer extends BaseController
     }
 
     /**
+     * Checks whether a string is an integer or a decimal
+     * @param string $string The input string
+     * @return bool
+     */
+    private static function isNumeric(string $string): bool
+    {
+        return (preg_match("/^\-?[0-9]*\.?[0-9]+\z/", trim($string)));
+    }
+
+    /**
      * Returns a new seed
      * @throws Exception
      */
     private static function newSeed(): string
     {
-        return (string) random_int(1, 9999999999);
+        return (string) random_int(env('RANDOMIZER_DEFAULT_SEED_MIN', "1000000000"), env('RANDOMIZER_DEFAULT_SEED_MAX', "9999999999"));
     }
 
     /**
