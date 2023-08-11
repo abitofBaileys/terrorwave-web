@@ -269,11 +269,33 @@ return [
         ],
         'blitz' => [
             'key' => 'blitz',
-            'value' => 'Allows a faster playthrough',
+            'value' => "Allows a faster playthrough (\u{26A0}Testing Phase)",
             'category' => 0,
             'allowed' => true,
             'displayed' => true,
             'enabled' => in_array('blitz', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
+        ],
+        'sinistrals' => [
+            'key' => 'sinistrals',
+            'value' => "Maidens are always guarded by sinistrals.<br>Makes Daos last boss.",
+            'category' => 0,
+            'allowed' => true,
+            'displayed' => true,
+            'enabled' => in_array('sinistrals', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
+            'behavior' => [
+                'off' => ['code-last_sinistral']
+            ],
+        ],
+        'last_sinistral' => [
+            'key' => 'last_sinistral',
+            'value' => "Last boss is always one of the sinistrals.<br>Conflicts with 'sinistrals' code.",
+            'category' => 0,
+            'allowed' => true,
+            'displayed' => true,
+            'enabled' => in_array('last_sinistral', explode(',', env('RANDOMIZER_DEFAULT_CODE', ''))),
+            'behavior' => [
+                'off' => ['code-sinistrals']
+            ],
         ],
     ],
     /*
