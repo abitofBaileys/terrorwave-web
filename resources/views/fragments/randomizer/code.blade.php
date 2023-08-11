@@ -18,7 +18,7 @@
                             @endforeach
                         @endisset
                         ">
-                        <label class="form-check-label" for="code-{{$code['key']}}">{{$code['value']}}</label>
+                        <label class="form-check-label" for="code-{{$code['key']}}">{!! $code['value'] !!}</label>
                     </div>
                 </div>
             @endif
